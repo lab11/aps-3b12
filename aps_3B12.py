@@ -18,7 +18,7 @@ def help():
 	print("off\tTurn load off")
 	print("readV\tRead voltage value")
 	print("readI\tRead current value")
-	print("readW\tRead current value")
+	print("readW\tRead wattage value")
 	print("watt=XX\tSet load to XX W")
 	print("amp=XX\tSet load to XX A")
 	print("help\tDisplay help")
