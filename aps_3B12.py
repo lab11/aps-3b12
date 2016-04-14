@@ -88,6 +88,7 @@ def main():
 					offset = tmp - value
 					if abs(offset) <= tmpOffset:
 						break
+					tryValue -= offset
 				if tmp > 0:
 					print('Settle to {:} {:}'.format(tmp, tmpType))
 			elif command == 'inc':
