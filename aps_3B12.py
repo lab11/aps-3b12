@@ -3,7 +3,8 @@ import APS3B12
 from time import sleep
 
 DEV = '/dev/ttyUSB0'
-OFFSET_THRESHOLD = 0.003 # mA
+CURRENT_OFFSET = 0.003 # mA
+WATT_OFFSET = 3 # W
 
 def help(inc_val):
 	print("Commands:")
@@ -26,6 +27,15 @@ def main():
 	help(inc_watt)
 	myDevice = APS3B12.APS3B12(DEV)
 
+	op1Dict = {'on':(myDevice.load_enable, True), \
+		      'off':(myDevice.load_enable, False), \
+			'readV':(myDevice.get_value, 'V'), \
+			'readI':(myDevice.get_value, 'I'), \
+			'readW':(myDevice.get_value, 'W'), \
+			 'help':(help, inc_watt),\
+			 'exit':(myDevice.load_enable, False)
+			  }
+
 	while(1):
 		textIn = input('Enter input: ')
 		textIn = textIn.split('=')
@@ -33,7 +43,6 @@ def main():
 		# no command, simply increment by inc_watt
 		if len(textIn[0]) == 0:
 			input_watt += inc_watt
-			#print('increment the load to {:} (W)'.format(input_watt))
 			myDevice.set_value('W', input_watt)
 		# No-parameter commands
 		elif len(textIn) == 1:
@@ -65,20 +74,22 @@ def main():
 				print('Unrecognized command')
 		elif len(textIn) == 2:
 			value = float(textIn[1].strip(' '))
-			if command == 'watt':
-				input_watt = value
-				myDevice.set_value('W', input_watt)
-			elif command == 'amp':
+			if command == 'watt' or command == 'amp':
+				if command == 'watt':
+					input_watt = value
+				tmpType = 'W' if command == 'watt' else 'I'
+				tmpOffset = WATT_OFFSET if command == 'watt' else CURRENT_OFFSET
 				tryValue = value
+				# recursively correct the setting
 				while True:
-					myDevice.set_value('I', tryValue)
-					sleep(1)
-					tmp = myDevice.get_value('I')
-					offset = tmp - value
-					if abs(offset) <= OFFSET_THRESHOLD:
+					tmp = myDevice.set_value(tmpType, tryValue)
+					if tmp < 0:
 						break
-					tryValue -= offset
-				print('Settle to {:} (A)'.format(tmp))
+					offset = tmp - value
+					if abs(offset) <= tmpOffset:
+						break
+				if tmp > 0:
+					print('Settle to {:} {:}'.format(tmp, tmpType))
 			elif command == 'inc':
 				inc_watt = value
 				print("Increment value set to {:} W".format(inc_watt))

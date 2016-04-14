@@ -67,7 +67,7 @@ class APS3B12(object):
 	def set_value(self, valType, value):
 		if not self.state:
 			print("Load not enabled, command ignored")
-			return
+			return -1
 		# remote only mode
 		self.serial_write_byte_UTF8('REM;')
 		value = float(value)
@@ -88,6 +88,6 @@ class APS3B12(object):
 				self.set_value('I', i)
 		# local only mode
 		self.serial_write_byte_UTF8('LOC;')
-		time.sleep(0.5)
-		self.get_value(valType)
+		time.sleep(1)
+		return self.get_value(valType)
 
