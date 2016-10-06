@@ -1,10 +1,8 @@
 
 #! /usr/bin/python3
 import APS3B12
-from time import sleep
 
 import socket
-import json
 
 DEV = '/dev/ttyUSB0'
 CURRENT_OFFSET = 0.003 # mA
@@ -47,6 +45,7 @@ def cmdExec(myStr):
         res = myFuc(myArg)
         if res:
             return res
+        return 'Execute succeed'
     elif '=' in myCmd and len(myCmd.split('='))==2:
         myCmd = myCmd.split('=')
         if (myCmd[0] == 'watt' or myCmd[0] == 'amp') and isFloat(myCmd[1]):
@@ -67,6 +66,7 @@ def cmdExec(myStr):
             if tmp > 0:
                 print('Settle to {:} {:}'.format(tmp, tmpType))
                 return tmp
+    return 'Invalid Command'
     
 def main():
     print('APS3B12 control script server')
