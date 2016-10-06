@@ -1,5 +1,6 @@
 
 import socket
+import sys
 
 HOST = 'lab11power.ddns.net'
 PORT = 4908
@@ -17,6 +18,7 @@ def help():
     print("exit\tTurn load off and exit application\n")
 
 def main():
+    version2 = True if sys.version_info[0] < 3 else False
 
     skt = socket.socket()
     skt.connect((HOST, PORT))
@@ -24,11 +26,18 @@ def main():
     help()
 
     while (1):
-        textIn = input('Enter input: ')
+        if version2:
+            textIn = raw_input('Enter input: ')
+        else:
+            textIn = input('Enter input: ')
+
         if textIn == 'help':
             help()
         else:
-            skt.send(bytes(textIn, 'utf-8'))
+            if version2:
+                skt.send(textIn)
+            else:
+                skt.send(bytes(textIn, 'utf-8'))
             data = skt.recv(1024).strip().decode('utf-8')
             print('{0}\r\n'.format(data))
             if textIn == 'exit':
