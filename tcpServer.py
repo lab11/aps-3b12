@@ -3,6 +3,7 @@
 import APS3B12
 
 import socket
+import sys
 
 DEV = '/dev/ttyUSB0'
 CURRENT_OFFSET = 0.003 # mA
@@ -30,6 +31,9 @@ def isFloat(val):
 # "watt=XX": Set load to XX W
 # "amp=XX":  Set load to XX A
 def cmdExec(myStr):
+    if sys.version_info[0] < 3:
+        raise 'Python 3 required to run this script'
+
     myCmd = myStr
 
     op1Dict = {'on':(myDevice.load_enable, True), \
