@@ -5,6 +5,7 @@ from time import sleep
 DEV = '/dev/ttyUSB0'
 CURRENT_OFFSET = 0.003 # mA
 WATT_OFFSET = 3 # W
+MAX_TRIALS = 5 # try 5 times max
 
 def help(inc_val):
     print("Commands:")
@@ -80,8 +81,9 @@ def main():
                 tmpType = 'W' if command == 'watt' else 'I'
                 tmpOffset = WATT_OFFSET if command == 'watt' else CURRENT_OFFSET
                 tryValue = value
+                trials = 0
                 # recursively correct the setting
-                while True:
+                while trials < MAX_TRIALS:
                     tmp = myDevice.set_value(tmpType, tryValue)
                     if tmp < 0:
                         break
@@ -89,6 +91,7 @@ def main():
                     if abs(offset) <= tmpOffset:
                         break
                     tryValue -= offset
+                    trials += 1
                 if tmp > 0:
                     print('Settle to {:} {:}'.format(tmp, tmpType))
             elif command == 'inc':

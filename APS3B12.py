@@ -4,7 +4,6 @@ import time
 import sys
 
 
-
 class APS3B12(object):
 
     def serial_write_byte_UTF8(self, text):
@@ -38,6 +37,8 @@ class APS3B12(object):
         self.load_enable(self.state)
         # local only mode
         self.serial_write_byte_UTF8('LOC;')
+        # maximum current setting
+        self.MAX_CURRENT_SETTING = 10
 
     def get_loadState(self):
         # remote only mode
@@ -71,7 +72,7 @@ class APS3B12(object):
         # remote only mode
         self.serial_write_byte_UTF8('REM;')
         value = float(value)
-        if valType == 'I':
+        if valType == 'I' and value >= 0 and value <= self.MAX_CURRENT_SETTING:
             self.serial_write_byte_UTF8('CC:A ' + str(value) + ';')
             print('Setting current to {:.3f} (A)'.format(value))
         elif valType == 'W':
