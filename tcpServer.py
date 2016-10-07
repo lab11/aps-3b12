@@ -13,6 +13,33 @@ HOST = 'lab11power.ddns.net'
 PORT = 4908
 myDevice = APS3B12.APS3B12(DEV)
 
+def main():
+    if sys.version_info[0] < 3:
+        raise 'Python 3 required to run this script'
+
+    print('APS3B12 control script server')
+    
+    skt = socket.socket()
+    skt.bind((HOST, PORT))
+
+    while True:
+        skt.listen(1)
+        c, addr = skt.accept()
+        print('connection from: {0}'.format(addr))
+        while True:
+            data = c.recv(1024).strip().decode('utf-8')
+            if not data:
+                break
+            print("Command Received: {0}".format(data))
+            res = cmdExec(data)
+            if data == 'exit':
+                break
+            if res:
+                c.send(bytes(str(res), 'utf-8'))
+        c.close()
+        print('Connection closed')
+        myDevice.load_enable(False)
+
 def isFloat(val):
     try:
         float(val)
@@ -31,9 +58,6 @@ def isFloat(val):
 # "watt=XX": Set load to XX W
 # "amp=XX":  Set load to XX A
 def cmdExec(myStr):
-    if sys.version_info[0] < 3:
-        raise 'Python 3 required to run this script'
-
     myCmd = myStr
 
     op1Dict = {'on':(myDevice.load_enable, True), \
@@ -72,31 +96,6 @@ def cmdExec(myStr):
                 return tmp
     return 'Invalid Command'
     
-def main():
-    print('APS3B12 control script server')
-    
-    
-    skt = socket.socket()
-    skt.bind((HOST, PORT))
-
-    while True:
-        skt.listen(1)
-        c, addr = skt.accept()
-        print('connection from: {0}'.format(addr))
-        while True:
-            data = c.recv(1024).strip().decode('utf-8')
-            if not data:
-                break
-            print("Command Received: {0}".format(data))
-            res = cmdExec(data)
-            if data == 'exit':
-                break
-            if res:
-                c.send(bytes(str(res), 'utf-8'))
-        c.close()
-        print('Connection closed')
-        myDevice.load_enable(False)
-
 
 if __name__=="__main__":
     main()
