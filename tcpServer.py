@@ -38,7 +38,7 @@ def main():
                 c.send(bytes(str(res), 'utf-8'))
         c.close()
         print('Connection closed')
-        myDevice.load_enable(False)
+        #myDevice.load_enable(False)
 
 def isFloat(val):
     try:
