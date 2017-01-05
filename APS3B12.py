@@ -25,20 +25,21 @@ class APS3B12(object):
         # local only mode
         self.serial_write_byte_UTF8('LOC;')
 
-    def __init__(self, dev):
+    def __init__(self, dev, reset):
         try:
             self.serial = serial.Serial(dev, 9600)
         except:
             sys.exit('Cannot find {:}'.format(dev))
-        self.state = False
-        # remote only mode
-        self.serial_write_byte_UTF8('REM;')
-        # turn off load
-        self.load_enable(self.state)
-        # local only mode
-        self.serial_write_byte_UTF8('LOC;')
-        # maximum current setting
-        self.MAX_CURRENT_SETTING = 10
+        if(reset): 
+            self.state = False
+            # remote only mode
+            self.serial_write_byte_UTF8('REM;')
+            # turn off load
+            self.load_enable(self.state)
+            # local only mode
+            self.serial_write_byte_UTF8('LOC;')
+            # maximum current setting
+            self.MAX_CURRENT_SETTING = 10
 
     def get_loadState(self):
         # remote only mode
