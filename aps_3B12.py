@@ -41,6 +41,12 @@ def main():
             power = '{:.3f}'.format(myDevice.get_value('W'))
             print('[' + voltage + ',' + power + ']')
             exit()
+        elif(sys.argv[1].isdigit()):
+            myDevice.set_value('W', sys.argv[1])
+            voltage = '{:.3f}'.format(myDevice.get_value('V'))
+            power = '{:.3f}'.format(myDevice.get_value('W'))
+            print('[' + voltage + ',' + power + ']')
+            exit()
     else:
         op1Dict = {'on':(myDevice.load_enable, True), \
                   'off':(myDevice.load_enable, False), \
