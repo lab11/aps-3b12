@@ -54,13 +54,13 @@ def main():
             print('[' + voltage + ',' + power + ']')
             exit()
     else:
-        op1Dict = {'on':(myDevice.load_enable, True), \
-                  'off':(myDevice.load_enable, False), \
+        op1Dict = {'on':(myDevice.load_enable, True, True), \
+                  'off':(myDevice.load_enable, False, True), \
                 'readV':(myDevice.get_value, 'V'), \
                 'readI':(myDevice.get_value, 'I'), \
                 'readW':(myDevice.get_value, 'W'), \
                  'help':(help, inc_watt),\
-                 'exit':(myDevice.load_enable, False)
+                 'exit':(myDevice.load_enable, False, True)
                   }
         while(1):
             textIn = input('Enter input: ')
@@ -69,15 +69,15 @@ def main():
             # no command, simply increment by inc_watt
             if len(textIn[0]) == 0:
                 input_watt += inc_watt
-                myDevice.set_value('W', input_watt)
+                myDevice.set_value('W', input_watt, True)
             # No-parameter commands
             elif len(textIn) == 1:
                 if command == 'on':
                     print("Load turning on...")
-                    myDevice.load_enable(True)
+                    myDevice.load_enable(True, True)
                 elif command == 'off':
                     print("Load turning off...")
-                    myDevice.load_enable(False)
+                    myDevice.load_enable(False, True)
                 elif command == 'readV':
                     voltage = myDevice.get_value('V')
                     print('Voltage : {:.3f} (V)'.format(voltage))
@@ -95,12 +95,12 @@ def main():
                     print('Wave setting: {:}'.format(wave))
                 elif command.isdigit():
                     input_watt = command
-                    myDevice.set_value('W', input_watt)
+                    myDevice.set_value('W', input_watt, True)
                 elif command == 'help':
                     help(inc_watt)
                 elif command == 'exit':
                     print("Exiting...")
-                    myDevice.load_enable(False)
+                    myDevice.load_enable(False, True)
                     break
                 else:
                     print('Unrecognized command')
@@ -115,7 +115,7 @@ def main():
                     trials = 0
                     # recursively correct the setting
                     while trials < MAX_TRIALS:
-                        tmp = myDevice.set_value(tmpType, tryValue)
+                        tmp = myDevice.set_value(tmpType, tryValue, True)
                         if tmp < 0:
                             break
                         offset = tmp - value
