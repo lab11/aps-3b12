@@ -81,13 +81,13 @@ class APS3B12(object):
                 print("Please wait for command to finish")
             v_meas = self.get_value('V')
             i = value/v_meas if v_meas > 0 else value/120
-            self.set_value('I', i)
+            self.set_value('I', i, verbose)
             time.sleep(1)
             p_meas = self.get_value('W')
             # v_meas <= 120, actual current should be higher than calcualted
             if p_meas > 0:
                 i *= value/p_meas
-                self.set_value('I', i)
+                self.set_value('I', i, verbose)
         # local only mode
         self.serial_write_byte_UTF8('LOC;')
         time.sleep(1)
