@@ -47,8 +47,8 @@ def main():
             print('[' + voltage + ',' + power + ']')
             exit()
         elif(sys.argv[1].isdigit()):
-            myDevice.load_enable(True)
-            myDevice.set_value('W', sys.argv[1])
+            myDevice.load_enable(True, False)
+            myDevice.set_value('W', sys.argv[1], False)
             voltage = '{:.3f}'.format(myDevice.get_value('V'))
             power = '{:.3f}'.format(myDevice.get_value('W'))
             print('[' + voltage + ',' + power + ']')

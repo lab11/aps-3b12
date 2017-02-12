@@ -10,15 +10,17 @@ class APS3B12(object):
         self.serial.write(text.encode(encoding="utf-8"))
         time.sleep(.03)
 
-    def load_enable(self, enable):
+    def load_enable(self, enable, verbose):
         # remote only mode
         self.serial_write_byte_UTF8('REM;')
         if enable:
-            print('Enabling load')
+            if(verbose):
+                print('Enabling load')
             self.serial_write_byte_UTF8('LOAD 1;')
             self.state = True
         else:
-            print('Disabling load')
+            if(verbose):
+                print('Disabling load')
             self.serial_write_byte_UTF8('CC:A 0;')
             self.serial_write_byte_UTF8('LOAD 0;')
             self.state = False
@@ -62,7 +64,7 @@ class APS3B12(object):
         self.serial_write_byte_UTF8('LOC;')
         return value
     
-    def set_value(self, valType, value):
+    def set_value(self, valType, value, verbose):
         if not self.state:
             print("Load not enabled, command ignored")
             return -1
@@ -71,10 +73,12 @@ class APS3B12(object):
         value = float(value)
         if valType == 'I' and value >= 0 and value <= self.MAX_CURRENT_SETTING:
             self.serial_write_byte_UTF8('CC:A ' + str(value) + ';')
-            print('Setting current to {:.3f} (A)'.format(value))
+            if(verbose):
+                print('Setting current to {:.3f} (A)'.format(value))
         elif valType == 'W':
-            print("Setting wattage to {:.3f} (W)".format(value))
-            print("Please wait for command to finish")
+            if(verbose):
+                print("Setting wattage to {:.3f} (W)".format(value))
+                print("Please wait for command to finish")
             v_meas = self.get_value('V')
             i = value/v_meas if v_meas > 0 else value/120
             self.set_value('I', i)
