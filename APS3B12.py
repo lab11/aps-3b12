@@ -30,16 +30,12 @@ class APS3B12(object):
             self.serial = serial.Serial(dev, 9600)
         except:
             sys.exit('Cannot find {:}'.format(dev))
-        if(reset): 
-            self.state = False
-            # remote only mode
-            self.serial_write_byte_UTF8('REM;')
-            # turn off load
-            self.load_enable(self.state)
-            # local only mode
-            self.serial_write_byte_UTF8('LOC;')
-            # maximum current setting
-            self.MAX_CURRENT_SETTING = 10
+        if reset:
+            self.load_enable(False)
+            self.set_get_bank_wave('SET', 'BANK', 0)
+            self.set_get_bank_wave('SET', 'WAVE', 0)
+        # maximum current setting
+        self.MAX_CURRENT_SETTING = 10
 
     def get_loadState(self):
         # remote only mode
@@ -92,4 +88,27 @@ class APS3B12(object):
         self.serial_write_byte_UTF8('LOC;')
         time.sleep(1)
         return self.get_value(valType)
+
+    def set_get_bank_wave(self, set_get, valType, value):
+        if valType == 'BANK' or valType == 'WAVE':
+            if set_get == 'SET':
+                value = int(value)
+                upperLim = 10 if valType == 'BANK' else 4
+                if value < 0 or value > upperLim:
+                    print('invalid input value, 0 <= ' + valType + ' <= ' + str(uppLim))
+                    return
+            # remote only mode
+            self.serial_write_byte_UTF8('REM;')
+            if set_get == 'SET':
+                self.serial_write_byte_UTF8(valType + ' ' + str(value) + ';')
+            else:
+                self.serial_write_byte_UTF8(valType + ' ?;')
+                tmp = self.serial.read(4).decode(encoding='utf-8')
+                tmp = int(tmp.strip())
+            # local only mode
+            self.serial_write_byte_UTF8('LOC;')
+            if set_get == 'GET':
+                return tmp
+        else:
+            print('Invalid type')
 

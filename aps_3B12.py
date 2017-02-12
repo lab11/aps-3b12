@@ -9,22 +9,26 @@ WATT_OFFSET = 3 # W
 MAX_TRIALS = 5 # try 5 times max
 
 def help(inc_val):
-    print("Commands:")
-    print("on\tTurn load on")
-    print("off\tTurn load off")
-    print("readV\tRead voltage value")
-    print("readI\tRead current value")
-    print("readW\tRead wattage value")
-    print("[watt=]XX\tSet load to XX W")
-    print("amp=XX\tSet load to XX A")
-    print("inc=XX\tSet increment to XX W")
-    print("<enter>\tIncrement wattage by {:} W".format(inc_val))
-    print("help\tDisplay help")
-    print("exit\tTurn load off and exit application\n")
+    print("Supported Commands:")
+    print("on           Turn load on")
+    print("off          Turn load off")
+    print("readV        Read voltage value")
+    print("readI        Read current value")
+    print("readW        Read wattage value")
+    print("[watt=]XX    Set load to XX W")
+    print("amp=XX       Set load to XX A")
+    print("inc=XX       Set increment to XX W")
+    print("bank=XX      Set bank to XX")
+    print("wave=X       Set wave to X")
+    print("readBank     read bank setting")
+    print("readWave     read wave setting")
+    print("<enter>      Increment wattage by {:} W".format(inc_val))
+    print("help         Display help")
+    print("exit         Turn load off and exit application\n")
 
 def main():
 
-	reset = True if len(sys.argv) != 2 else False
+    reset = True if len(sys.argv) != 2 else False
 
     input_watt = 0
     inc_watt = 25
@@ -35,7 +39,8 @@ def main():
     myDevice = APS3B12.APS3B12(DEV, reset)
 
     #if(len(sys.argv) == 2):
-    if(!reset):
+    #if(!reset):
+    if not reset:
         if(sys.argv[1] == 'read'):
             voltage = '{:.3f}'.format(myDevice.get_value('V'))
             power = '{:.3f}'.format(myDevice.get_value('W'))
@@ -81,6 +86,12 @@ def main():
                 elif command == 'readW':
                     power = myDevice.get_value('W')
                     print('Current: {:.3f} (W)'.format(power))
+                elif command == 'readBank':
+                    bank = myDevice.set_get_bank_wave('GET', 'BANK', 0)
+                    print('Bank setting: {:}'.format(bank))
+                elif command == 'readWave':
+                    wave = myDevice.set_get_bank_wave('GET', 'WAVE', 0)
+                    print('Wave setting: {:}'.format(wave))
                 elif command.isdigit():
                     input_watt = command
                     myDevice.set_value('W', input_watt)
@@ -116,6 +127,11 @@ def main():
                 elif command == 'inc':
                     inc_watt = value
                     print("Increment value set to {:} W".format(inc_watt))
+                elif command == 'bank' or command =='wave':
+                    value = int(value)
+                    myDevice.set_get_bank_wave('SET', command.upper(), value)
+                    v = myDevice.set_get_bank_wave('GET', command.upper(), 0)
+                    print('Set ' + command.upper() + ' to {:}'.format(v))
             else:
                 print('Unrecognized command')
 
