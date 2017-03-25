@@ -44,10 +44,13 @@ def main():
         if(sys.argv[1] == 'read'):
             voltage = '{:.3f}'.format(myDevice.get_value('V'))
             power = '{:.3f}'.format(myDevice.get_value('W'))
-            print('[' + voltage + ',' + power + ']')
+            wave = myDevice.set_get_bank_wave('GET', 'WAVE', 0)
+            print('[' + str(wave) + ',' + voltage + ',' + power + ']')
             exit()
         elif(sys.argv[1].isdigit()):
             myDevice.load_enable(True, False)
+            myDevice.set_get_bank_wave('SET', 'WAVE', 0)
+            myDevice.set_get_bank_wave('Set', 'BANK', 1)
             myDevice.set_value('W', sys.argv[1], False)
             voltage = '{:.3f}'.format(myDevice.get_value('V'))
             power = '{:.3f}'.format(myDevice.get_value('W'))
